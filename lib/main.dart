@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hvz_flutter_app/login.dart';
 
 void main() => runApp(MyApp());
 
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.grey[900],
         accentColor: Colors.amber
       ),
-      home: MyHomePage(title: 'UWaterloo Humans vs. Zombies'),
+      home: LoginPage(),
     );
   }
 }
@@ -124,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.display1,
+              style: Theme.of(context).textTheme.headline4,
             ),
           ],
         ),
