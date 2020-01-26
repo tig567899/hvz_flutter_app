@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hvz_flutter_app/applicationData.dart';
 import 'package:hvz_flutter_app/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:hvz_flutter_app/playerData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
 
@@ -14,6 +16,7 @@ class APIManager {
   String hvzUrl;
   Dio dio = Dio();
   CookieJar cj = CookieJar();
+  ApplicationData appData = ApplicationData();
 
   factory APIManager() {
     return _singleton;
@@ -36,7 +39,6 @@ class APIManager {
           responseType: ResponseType.plain
         )
     );
-    developer.log(loginUrl, name: 'hvzapilogin');
     if (response.statusCode != 200) {
       developer.log("Intitial Get failed", name: "hvzapilogin");
       return response.statusCode;
@@ -63,16 +65,30 @@ class APIManager {
     );
     response = await dio.get(hvzUrl + "account_info",
       options: Options(
-        followRedirects: false,
+        //followRedirects: false,
         validateStatus: (status) { return status < 500; }
       )
     );
-
     if (response.statusCode == 200) {
-      SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-
+      QueryResult query = QueryResult.fromJson(response.data);
+      setUserData(query.results[0]);
+    } else {
+      developer.log("Error processing data " + response.statusCode.toString(), name: "hvzapilogin");
     }
 
     return response.statusCode;
+  }
+
+  void setUserData(PlayerInfo info) {
+    if (info == null) {
+      developer.log("Info is null", name: "hvzapilogin");
+      return;
+    } else if (appData.info == null) {
+      developer.log("AppData info is null", name: "hvzapilogin");
+      return;
+    }
+
+    appData.info = info;
+    appData.loggedIn = true;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hvz_flutter_app/apiManager.dart';
+import 'package:hvz_flutter_app/main.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -75,11 +76,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
   }
 
   void submit(BuildContext context) async {
-    String success = await APIManager().getLogin(emailController.text, passwordController.text);
-    showAlertDialog(context, success);
+    int success = await APIManager().getLogin(emailController.text, passwordController.text);
+    if (success == 200) {
+      Navigator.push(context,
+          MaterialPageRoute(
+            builder: (context) => MyHomePage()
+          ));
+    }
   }
 
-  showAlertDialog(BuildContext context, String message) {
+  _showAlertDialog(BuildContext context, String message) {
     // set up the button
     Widget okButton = FlatButton(
       child: Text("OK"),
