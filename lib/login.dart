@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hvz_flutter_app/apiManager.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -73,8 +74,34 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
     );
   }
 
-  void submit(BuildContext context) {
-    showDialog(context: context)
+  void submit(BuildContext context) async {
+    String success = await APIManager().getLogin(emailController.text, passwordController.text);
+    showAlertDialog(context, success);
+  }
+
+  showAlertDialog(BuildContext context, String message) {
+    // set up the button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () { Navigator.of(context).pop(); },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Finished"),
+      content: Text("Successful? " + message.toString()),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
 
