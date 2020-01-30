@@ -10,13 +10,5 @@ class ApplicationData {
     return _singleton;
   }
 
-/*  set info(PlayerInfo info) {
-    _playerInfo = info;
-  }
-
-  get info {
-    return _playerInfo;
-  }*/
-
   ApplicationData._internal();
 }
