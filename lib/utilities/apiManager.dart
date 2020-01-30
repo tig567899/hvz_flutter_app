@@ -7,6 +7,7 @@ import 'package:hvz_flutter_app/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:hvz_flutter_app/playerData.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
 
@@ -15,7 +16,7 @@ class APIManager {
 
   String hvzUrl;
   Dio dio = Dio();
-  CookieJar cj = CookieJar();
+  PersistCookieJar cj;
   ApplicationData appData = ApplicationData();
 
   factory APIManager() {
@@ -23,7 +24,7 @@ class APIManager {
   }
 
   APIManager._internal() {
-    dio.interceptors.add(CookieManager(cj));
+    _setCookieJarInterceptor();
     if (kReleaseMode) {
       hvzUrl = Constants.PRODUCTION_URL;
     } else {
@@ -31,7 +32,26 @@ class APIManager {
     }
   }
 
-  Future<int> getLogin(String username, String password) async {
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  Future<Directory> get _localCoookieDirectory async {
+    final path = await _localPath;
+    final Directory dir = new Directory('$path/cookies');
+    await dir.create();
+    return dir;
+  }
+
+  void _setCookieJarInterceptor() async {
+    Directory dir = await _localCoookieDirectory;
+    final cookiePath = dir.path;
+    cj = PersistCookieJar(dir: cookiePath);
+    dio.interceptors.add(CookieManager(cj));
+  }
+
+  Future<int> login(String username, String password) async {
     String loginUrl = hvzUrl + "auth/login/";
     Response response = await dio.get(
         loginUrl,
@@ -90,5 +110,15 @@ class APIManager {
 
     appData.info = info;
     appData.loggedIn = true;
+  }
+
+  Future<int> logout() async {
+    Response response = await dio.get(hvzUrl + "auth/logout/",
+      options: Options(
+        responseType: ResponseType.plain,
+      )
+    );
+
+    return response.statusCode;
   }
 }

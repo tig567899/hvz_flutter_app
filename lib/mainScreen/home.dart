@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'file:///C:/Users/starl/Documents/Github/hvz_flutter_app/lib/utilities/apiManager.dart';
 
 import '../applicationData.dart';
 import '../constants.dart';
 import '../playerData.dart';
-import 'drawerLayouts/mainWidget.dart';
-import 'drawerLayouts/tagStunWidget.dart';
-import 'drawerLayouts/twitterWidget.dart';
+import 'widgets/mainWidget.dart';
+import 'widgets/tagStunWidget.dart';
+import 'widgets/twitterWidget.dart';
 
 class DrawerItem {
   String text;
@@ -16,6 +17,7 @@ class DrawerItem {
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
+  APIManager apiManager = APIManager();
 
   final String title = "UWaterloo Humans vs Zombies";
 
@@ -103,7 +105,11 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  void _logout(BuildContext context) {
+  void _logout(BuildContext context) async {
+    int statusCode = await widget.apiManager.logout();
+    if (statusCode != 200) {
+      return;
+    }
     appData.info = PlayerInfo();
     appData.loggedIn = false;
     Navigator.of(context).popUntil((route) => route.isFirst);

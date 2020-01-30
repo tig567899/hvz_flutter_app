@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hvz_flutter_app/apiManager.dart';
+import 'file:///C:/Users/starl/Documents/Github/hvz_flutter_app/lib/utilities/apiManager.dart';
 import 'package:hvz_flutter_app/loginScreen/widgets/loginWidget.dart';
-import 'package:hvz_flutter_app/loginScreen/widgets/progressWidget.dart';
+import 'package:hvz_flutter_app/utilities/loadingDialogManager.dart';
 import 'dart:developer' as developer;
 
 import '../mainScreen/home.dart';
@@ -19,10 +19,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
+  final loadingDialogManager = LoadingDialogManager();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
-  bool isLoading = false;
+  final apiManager = APIManager();
 
   @override
   Widget build(BuildContext context) {
@@ -35,20 +35,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
   }
 
   void submit() async {
-    _showLoadingDialog(context);
-    int responseCode = 0;
+    int responseCode = await loadingDialogManager.performLoadingTask(
+      context,
+      apiManager.login(emailController.text, passwordController.text),
+        () => _onError("Caught API error", "Unknown Error. Please contact the HvZ admin for assistance.")
+    );
 
-    try {
-      responseCode = await APIManager().getLogin(emailController.text, passwordController.text);
-    } catch(e) {
-      await Future.delayed(Duration(seconds: 2));
-      _hideLoadingDialog();
-      _onError("Caught API error", "Unknown Error. Please contact the HvZ admin for assistance.");
-      return;
-    }
-    await Future.delayed(Duration(seconds: 2));
-    developer.log("Popping", name:"hvzapilogin");
-    _hideLoadingDialog();
     switch(responseCode) {
       case 200:
         Navigator.push(context,
@@ -94,37 +86,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
     );
   }
 
-  void _showLoadingDialog(BuildContext context) {
-    isLoading = true;
-    AlertDialog progress = AlertDialog(
-      content: Row (
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget> [
-          CircularProgressIndicator(),
-          Container(
-            margin: EdgeInsets.only(left: 10),
-            child: Text("Loading..."),
-          )
-        ]
-      )
-    );
-
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return progress;
-      }
-    );
-  }
-
-  void _hideLoadingDialog() {
-    if (isLoading) {
-      isLoading = false;
-      Navigator.of(context, rootNavigator: true).pop();
-    }
-  }
 
   void _onError(String devLog, String alert) {
     developer.log(devLog, name: "hvzloginapi");
