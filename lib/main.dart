@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
-import 'file:///C:/Users/starl/Documents/Github/hvz_flutter_app/lib/loginScreen/login.dart';
+import 'package:flutter/services.dart';
+import 'package:hvz_flutter_app/loginScreen/login.dart';
+import 'package:hvz_flutter_app/utilities/apiManager.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  var apiManager = APIManager();
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+        apiManager.setCookieJarInterceptor()
+          .then((_) {
+            runApp(new MyApp());
+        });
+  });
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'UW Humans vs Zombies',
       theme: ThemeData(
         // This is the theme of your application.
         //

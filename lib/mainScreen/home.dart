@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hvz_flutter_app/utilities/loadingDialogManager.dart';
 import 'file:///C:/Users/starl/Documents/Github/hvz_flutter_app/lib/utilities/apiManager.dart';
 
 import '../applicationData.dart';
 import '../constants.dart';
-import '../playerData.dart';
+import '../models/playerInfo.dart';
 import 'widgets/mainWidget.dart';
 import 'widgets/tagStunWidget.dart';
 import 'widgets/twitterWidget.dart';
@@ -19,10 +20,10 @@ class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
   APIManager apiManager = APIManager();
 
-  final String title = "UWaterloo Humans vs Zombies";
+  final String routeName = "HomePage";
 
   final drawerItems = [
-    DrawerItem("Profile", DrawerState.PROFILE),
+    DrawerItem("Player Dashboard", DrawerState.PROFILE),
     DrawerItem("Report a tag or stun", DrawerState.TAG_STUN),
     DrawerItem("Twitter Feed", DrawerState.TWITTER),
   ];
@@ -35,6 +36,7 @@ class HomePageState extends State<HomePage> {
   ApplicationData appData = ApplicationData();
 
   DrawerState _selectedDrawerState = DrawerState.PROFILE;
+  String _title = "Player Dashboard";
 
   _getDrawerItemWidget(DrawerState state) {
     switch(state) {
@@ -51,9 +53,15 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  _onSelectDrawerItem(DrawerState state) {
+  @override
+  void initState() {
+    widget.apiManager.setCookieJarInterceptor();
+  }
+
+  _onSelectDrawerItem(DrawerItem item) {
     setState(() {
-      _selectedDrawerState = state;
+      _selectedDrawerState = item.key;
+      _title = item.text;
     });
     Navigator.of(context).pop(); // close the drawer
   }
@@ -73,7 +81,7 @@ class HomePageState extends State<HomePage> {
           new ListTile(
             title: new Text(item.text),
             selected: item.key == _selectedDrawerState,
-            onTap: () => _onSelectDrawerItem(item.key),
+            onTap: () => _onSelectDrawerItem(item),
           )
       );
     });
@@ -91,7 +99,7 @@ class HomePageState extends State<HomePage> {
             appBar: AppBar(
               // Here we take the value from the MyHomePage object that was created by
               // the App.build method, and use it to set our appbar title.
-              title: Text(widget.title),
+              title: Text(_title),
 
             ),
             drawer: Drawer (
@@ -106,10 +114,16 @@ class HomePageState extends State<HomePage> {
   }
 
   void _logout(BuildContext context) async {
-    int statusCode = await widget.apiManager.logout();
+    int statusCode = await LoadingDialogManager()
+        .performLoadingTask(context, widget.apiManager.logout(), _returnToLogout);
     if (statusCode != 200) {
       return;
+    } else {
+      _returnToLogout();
     }
+  }
+
+  void _returnToLogout() {
     appData.info = PlayerInfo();
     appData.loggedIn = false;
     Navigator.of(context).popUntil((route) => route.isFirst);

@@ -18,12 +18,18 @@ class LoginWidget extends StatelessWidget {
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Expanded(
+                  Visibility(
+                    visible: MediaQuery.of(context).orientation == Orientation.portrait,
+                    child: Expanded(
                       flex: 3,
-                      child: SvgPicture.asset(
-                        assetName,
-                        semanticsLabel: 'HvZ Logo',
+                      child: Hero(
+                        tag: "logo",
+                        child: SvgPicture.asset(
+                          assetName,
+                          semanticsLabel: 'HvZ Logo',
+                        )
                       )
+                    )
                   ),
                   Expanded(
                     flex: 5,

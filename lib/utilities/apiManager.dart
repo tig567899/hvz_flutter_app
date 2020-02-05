@@ -6,9 +6,8 @@ import 'package:hvz_flutter_app/applicationData.dart';
 import 'package:hvz_flutter_app/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
-import 'package:hvz_flutter_app/playerData.dart';
+import 'package:hvz_flutter_app/models/playerInfo.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
 
 class APIManager {
@@ -24,7 +23,6 @@ class APIManager {
   }
 
   APIManager._internal() {
-    _setCookieJarInterceptor();
     if (kReleaseMode) {
       hvzUrl = Constants.PRODUCTION_URL;
     } else {
@@ -44,35 +42,19 @@ class APIManager {
     return dir;
   }
 
-  void _setCookieJarInterceptor() async {
+  Future<String> setCookieJarInterceptor() async {
     Directory dir = await _localCoookieDirectory;
     final cookiePath = dir.path;
     cj = PersistCookieJar(dir: cookiePath);
     dio.interceptors.add(CookieManager(cj));
+    return cookiePath;
   }
 
   Future<int> login(String username, String password) async {
     String loginUrl = hvzUrl + "auth/login/";
-    Response response = await dio.get(
-        loginUrl,
-        options: Options(
-          responseType: ResponseType.plain
-        )
-    );
-    if (response.statusCode != 200) {
-      developer.log("Intitial Get failed", name: "hvzapilogin");
-      return response.statusCode;
-    }
-
-    List<Cookie> cookies = cj.loadForRequest(Uri.parse(hvzUrl));
-    String csrfToken = cookies.firstWhere((element) => element.name == "csrftoken").value;
-
-    developer.log("Response Params: " + csrfToken.toString(), name: "hvzapilogin");
-
-    response = await dio.post(
+    Response response = await dio.post(
         loginUrl,
         data: {
-          "csrfmiddlewaretoken": csrfToken,
           "username": username,
           "password": password,
         },
@@ -83,19 +65,27 @@ class APIManager {
         validateStatus: (status) { return status < 500; }
       )
     );
-    response = await dio.get(hvzUrl + "account_info",
-      options: Options(
-        //followRedirects: false,
-        validateStatus: (status) { return status < 500; }
-      )
+
+    var responseCode = await getAccountInfo();
+
+    return responseCode;
+  }
+
+  Future<int> getAccountInfo() async {
+    Response response = await dio.get(hvzUrl + "account_info",
+        options: Options(
+          //followRedirects: false,
+            validateStatus: (status) { return status < 500; }
+        )
     );
+
     if (response.statusCode == 200) {
-      QueryResult query = QueryResult.fromJson(response.data);
-      setUserData(query.results[0]);
+      PlayerInfo info = PlayerInfo.fromJson(response.data);
+      setUserData(info);
+      developer.log("Data processing success.", name: "hvzapilogin");
     } else {
       developer.log("Error processing data " + response.statusCode.toString(), name: "hvzapilogin");
     }
-
     return response.statusCode;
   }
 
@@ -113,6 +103,12 @@ class APIManager {
   }
 
   Future<int> logout() async {
+    if (cj != null) {
+      List<Cookie> cookies = cj.loadForRequest(Uri.parse(hvzUrl));
+      developer.log(cookies.length.toString(), name: "APIManager logout");
+    } else {
+      developer.log("Cookie Jar is null", name: "APIManager logout");
+    }
     Response response = await dio.get(hvzUrl + "auth/logout/",
       options: Options(
         responseType: ResponseType.plain,
@@ -120,5 +116,16 @@ class APIManager {
     );
 
     return response.statusCode;
+  }
+
+  bool checkCookieExpiration() {
+    if (cj == null) {
+      developer.log("Null cookie jar", name: "APIManager");
+      return true;
+    } // if there's no cookie jar, treat it as a fresh login
+    List<Cookie> savedCookies = cj.loadForRequest(Uri.parse(hvzUrl));
+    if (savedCookies.length < 2) return true;
+    bool expired = savedCookies.fold(true, (previous, cookie) => cookie.expires.isBefore(DateTime.now()) && previous);
+    return expired;
   }
 }

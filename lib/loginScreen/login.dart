@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'file:///C:/Users/starl/Documents/Github/hvz_flutter_app/lib/utilities/apiManager.dart';
 import 'package:hvz_flutter_app/loginScreen/widgets/loginWidget.dart';
+import 'package:hvz_flutter_app/utilities/apiManager.dart';
 import 'package:hvz_flutter_app/utilities/loadingDialogManager.dart';
+import 'package:dio/dio.dart';
 import 'dart:developer' as developer;
 
 import '../mainScreen/home.dart';
@@ -13,6 +12,7 @@ class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
 
   final String title = "Login";
+  final String routeName = "LoginPage";
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -24,23 +24,54 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
   final passwordController = TextEditingController();
   final apiManager = APIManager();
 
+
+  @override
+  void initState() {
+    super.initState();
+    if (!apiManager.checkCookieExpiration()) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        _getAccountInfo();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: LoginWidget(emailController, passwordController, submit)
+      body: LoginWidget(emailController, passwordController, _submit)
     );
   }
 
-  void submit() async {
+  void _getAccountInfo() async {
+    int responseCode = await loadingDialogManager.performLoadingTask(
+        context,
+        apiManager.getAccountInfo(),
+        () => null
+    );
+    if (responseCode == null) return;
+    else if (responseCode == 200) {
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (context) => HomePage()
+          ));
+    }
+  }
+
+  void _submit() async {
     int responseCode = await loadingDialogManager.performLoadingTask(
       context,
       apiManager.login(emailController.text, passwordController.text),
         () => _onError("Caught API error", "Unknown Error. Please contact the HvZ admin for assistance.")
     );
 
+    if (responseCode == null) return;
+    _navigateToMainScreen(responseCode);
+  }
+
+  _navigateToMainScreen(int responseCode) {
     switch(responseCode) {
       case 200:
         Navigator.push(context,
