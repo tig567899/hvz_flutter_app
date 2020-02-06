@@ -4,6 +4,10 @@ class Game {
   String startTimestamp;
   String endTimestamp;
 
+  static const String RUNNING = "running";
+  static const String FINISHED = "finished";
+  static const String SIGNUPS = "signups";
+
   Game({
     this.name,
     this.status,

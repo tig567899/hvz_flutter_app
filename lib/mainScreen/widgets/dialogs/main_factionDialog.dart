@@ -1,14 +1,13 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hvz_flutter_app/models/faction.dart';
-import 'package:hvz_flutter_app/models/modifier.dart';
-import 'package:hvz_flutter_app/models/playerInfo.dart';
+import 'package:hvz_flutter_app/models/player/faction.dart';
+import 'package:hvz_flutter_app/models/player/modifier.dart';
 
 class FactionDialog extends AlertDialog {
-  BuildContext parentContext;
-  Faction faction;
-  Widget dismiss;
+  final BuildContext parentContext;
+  final Faction faction;
+  final Widget dismiss;
 
   FactionDialog(this.parentContext, this.faction, this.dismiss);
 
@@ -83,14 +82,14 @@ class FactionDialog extends AlertDialog {
 
     faction.modifiers.forEach((element) {
       modifiers.add(
-        Text(getModifierString(element))
+        Text(_getModifierString(element))
       );
     });
 
     return modifiers;
   }
 
-  String getModifierString(Modifier modifier) {
+  String _getModifierString(Modifier modifier) {
     String amountstr = modifier.amount.toString();
     if (modifier.amount > 0) {
       amountstr = "+${modifier.amount}";

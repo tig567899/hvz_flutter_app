@@ -6,7 +6,7 @@ import 'package:hvz_flutter_app/applicationData.dart';
 import 'package:hvz_flutter_app/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
-import 'package:hvz_flutter_app/models/playerInfo.dart';
+import 'package:hvz_flutter_app/models/player/playerInfo.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:developer' as developer;
 
@@ -65,6 +65,9 @@ class APIManager {
         validateStatus: (status) { return status < 500; }
       )
     );
+    if (response.statusCode != 200) {
+      return response.statusCode;
+    }
 
     var responseCode = await getAccountInfo();
 

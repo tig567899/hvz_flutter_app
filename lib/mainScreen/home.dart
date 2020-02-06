@@ -5,7 +5,7 @@ import 'file:///C:/Users/starl/Documents/Github/hvz_flutter_app/lib/utilities/ap
 
 import '../applicationData.dart';
 import '../constants.dart';
-import '../models/playerInfo.dart';
+import '../models/player/playerInfo.dart';
 import 'widgets/mainWidget.dart';
 import 'widgets/tagStunWidget.dart';
 import 'widgets/twitterWidget.dart';
@@ -18,7 +18,7 @@ class DrawerItem {
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
-  APIManager apiManager = APIManager();
+  final APIManager apiManager = APIManager();
 
   final String routeName = "HomePage";
 
@@ -55,6 +55,7 @@ class HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    super.initState();
     widget.apiManager.setCookieJarInterceptor();
   }
 

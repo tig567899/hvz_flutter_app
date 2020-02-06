@@ -1,4 +1,4 @@
-import 'models/playerInfo.dart';
+import 'models/player/playerInfo.dart';
 
 class ApplicationData {
   static final ApplicationData _singleton = ApplicationData._internal();

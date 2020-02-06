@@ -32,7 +32,7 @@ class PlayerInfo {
     email: json["email"],
     score: json["score"],
     shopScore: json["shop_score"],
-    faction: Faction.fromJson(json["faction"]),
+    faction: json["faction"] == null ? null : Faction.fromJson(json["faction"]),
     game: Game.fromJson(json["game"]),
   );
 

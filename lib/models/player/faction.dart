@@ -1,4 +1,5 @@
-import 'package:hvz_flutter_app/models/modifier.dart';
+
+import 'modifier.dart';
 
 class Faction {
   String name;

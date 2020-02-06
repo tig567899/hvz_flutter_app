@@ -1,12 +1,12 @@
 
 import 'package:flutter/material.dart';
-import 'package:hvz_flutter_app/models/playerInfo.dart';
+import 'package:hvz_flutter_app/models/player/playerInfo.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class PlayerCodeDialog extends AlertDialog {
-  BuildContext parentContext;
-  PlayerInfo playerInfo;
-  Widget dismiss;
+  final BuildContext parentContext;
+  final PlayerInfo playerInfo;
+  final Widget dismiss;
 
   PlayerCodeDialog(this.parentContext, this.playerInfo, this.dismiss);
 

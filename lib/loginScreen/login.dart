@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hvz_flutter_app/loginScreen/widgets/loginWidget.dart';
 import 'package:hvz_flutter_app/utilities/apiManager.dart';
 import 'package:hvz_flutter_app/utilities/loadingDialogManager.dart';
-import 'package:dio/dio.dart';
-import 'dart:developer' as developer;
-
-import '../mainScreen/home.dart';
+import 'package:hvz_flutter_app/mainScreen/home.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -119,7 +116,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
 
 
   void _onError(String devLog, String alert) {
-    developer.log(devLog, name: "hvzloginapi");
     _showAlertDialog(context, alert);
   }
 }
