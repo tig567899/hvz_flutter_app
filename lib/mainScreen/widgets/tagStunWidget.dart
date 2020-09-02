@@ -54,16 +54,18 @@ class TagStunWidget extends StatelessWidget {
 
   Future _scan(BuildContext context) async {
     try {
+      print("Here");
       String barcode = await BarcodeScanner.scan();
+
       _sendTagStun(context, barcode);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         Utilities.showErrorDialog(context, 'The user did not grant camera permission!');
       } else {
-        Utilities.showErrorDialog(context, 'Unknown error: $e');
+        // Do nothing.
       }
     } catch (e) {
-      Utilities.showErrorDialog(context, 'Unknown error: $e');
+      // Do nothing.
     }
   }
 
