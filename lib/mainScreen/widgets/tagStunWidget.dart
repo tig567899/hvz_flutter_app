@@ -10,9 +10,9 @@ import 'package:hvz_flutter_app/utilities/loadingDialogManager.dart';
 import 'package:hvz_flutter_app/utilities/util.dart';
 
 class TagStunWidget extends StatelessWidget {
-  APIManager _apiManager = APIManager();
-  PlayerInfo _playerInfo = ApplicationData().info;
-  LoadingDialogManager _loadingDialogManager = LoadingDialogManager();
+  final APIManager _apiManager = APIManager();
+  final PlayerInfo _playerInfo = ApplicationData().info;
+  final LoadingDialogManager _loadingDialogManager = LoadingDialogManager();
 
   @override
   Widget build(BuildContext context) {

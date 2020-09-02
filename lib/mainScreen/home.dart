@@ -10,7 +10,7 @@ import '../models/player/playerInfo.dart';
 import 'widgets/mainWidget.dart';
 import 'widgets/tagStunWidget.dart';
 import 'widgets/twitterWidget.dart';
-import 'widgets/pendingTagStunWidget.dart';
+import 'widgets/viewTagsStunsWidget.dart';
 
 class DrawerItem {
   String text;
@@ -27,7 +27,7 @@ class HomePage extends StatefulWidget {
   final drawerItems = [
     DrawerItem("Player Dashboard", DrawerState.PROFILE),
     DrawerItem("Report Tags/Stuns", DrawerState.TAG_STUN),
-    DrawerItem("View Pending Tags/Stuns", DrawerState.VIEW_TAGS),
+    DrawerItem("View Submitted Tags/Stuns", DrawerState.VIEW_TAGS),
     DrawerItem("Twitter Feed", DrawerState.TWITTER),
   ];
 

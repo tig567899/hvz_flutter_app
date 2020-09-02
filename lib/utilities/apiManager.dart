@@ -99,8 +99,7 @@ class APIManager {
     );
 
     if (response.statusCode == 200) {
-      print(TagLists.fromJson(response.data));
-    } else {
+      return TagLists.fromJson(response.data);
     }
     return null;
   }
