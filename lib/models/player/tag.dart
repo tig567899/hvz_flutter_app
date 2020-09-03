@@ -6,6 +6,7 @@ class Tag {
   int points;
   String location;
   String time;
+  String description;
   String tagType;
 
   Tag({
@@ -16,6 +17,7 @@ class Tag {
     this.points,
     this.location,
     this.time,
+    this.description,
     this.tagType
   });
 
@@ -27,8 +29,8 @@ class Tag {
     points: json["points"],
     location: json["location"],
     time: json["time"],
+    description: json["description"],
     tagType: json["tag_type"],
-
   );
 
   Map<String, dynamic> toJson() => {
@@ -39,6 +41,7 @@ class Tag {
     "points": points,
     "location": location,
     "time": time,
+    "description": description,
     "tag_type": tagType,
   };
 }

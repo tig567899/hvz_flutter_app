@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hvz_flutter_app/mainScreen/widgets/dialogs/viewTagsStuns_tagDetailDialog.dart';
 import 'package:intl/intl.dart';
 import 'package:hvz_flutter_app/models/player/tag.dart';
 
@@ -11,7 +12,7 @@ class TagRow extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     String targetText;
-    String actionText = _tag.initiatorRole == "H" ? "Stun" : "Tag";
+    String actionText = _tag.tagType == "S" ? "Stun" : "Tag";
 
     if (_showInitiator) {
       targetText = "$actionText from ${_tag.initiatorName}(${_tag.initiatorRole})";
@@ -43,7 +44,6 @@ class TagRow extends StatelessWidget{
                         targetText,
                         maxLines: 1,
                         textScaleFactor: 1.5,
-                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 12.0),
@@ -56,13 +56,21 @@ class TagRow extends StatelessWidget{
                     ]
                 ),
                 Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                      Text(
-                        "+${_tag.points.toString()}",
-                        maxLines: 1,
-                        textScaleFactor: 2,
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            "+${_tag.points.toString()}",
+                            maxLines: 1,
+                            textScaleFactor: 2,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                          ),
+                          Icon(
+                            Icons.arrow_right,
+                            size: 36.0
+                          )
+                        ],
                       )
                     ]
                 ),
@@ -73,6 +81,18 @@ class TagRow extends StatelessWidget{
   }
 
   void _showTagDetails(BuildContext context) {
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
 
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return TagDetailsDialog(_tag, okButton);
+      },
+    );
   }
 }

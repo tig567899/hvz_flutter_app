@@ -76,7 +76,7 @@ class TagStunWidget extends StatelessWidget {
           code,
           DateTime.now().millisecondsSinceEpoch~/1000,
           "",
-          "Verified by QR code, checksum 123456"),
+          "Verified by QR code through mobile app."),
         () => Utilities.showErrorDialog(context, 'An application error occured. Please contact the HvZ moderator team'));
 
     if (response == null) {

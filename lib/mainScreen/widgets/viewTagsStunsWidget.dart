@@ -29,7 +29,7 @@ class _PendingTagStunState extends State<PendingTagStunWidget> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _getPendingTags();
+      _getSubmittedTags();
     });
   }
 
@@ -48,7 +48,62 @@ class _PendingTagStunState extends State<PendingTagStunWidget> {
       );
     }
 
-    List<Widget> cards = [];
+    List<Widget> cards = [
+      Container(
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Card(
+                color: Colors.white,
+                elevation: 3,
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Total Tag/Stun Points",
+                        textAlign: TextAlign.center,
+                        textScaleFactor: 1.5,
+                      ),
+                      Text(
+                        _getPointTotal(_result.verified).toString(),
+                        textAlign: TextAlign.center,
+                        textScaleFactor: 1.5,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Card(
+                color: Colors.white,
+                elevation: 3,
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Pending Tag/Stun Points",
+                        textAlign: TextAlign.center,
+                        textScaleFactor: 1.5,
+                      ),
+                      Text(
+                        _getPointTotal(_result.unverified).toString(),
+                        textAlign: TextAlign.center,
+                        textScaleFactor: 1.5,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        )
+      )
+    ];
 
     if (_result.unverified.isNotEmpty) {
       cards.add(_generateStunCard(
@@ -124,7 +179,7 @@ class _PendingTagStunState extends State<PendingTagStunWidget> {
     });
     return Card(
         color: Colors.white,
-        elevation: 5,
+        elevation: 3,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10))
         ),
@@ -137,7 +192,7 @@ class _PendingTagStunState extends State<PendingTagStunWidget> {
     );
   }
 
-  void _getPendingTags() async {
+  void _getSubmittedTags() async {
     TagLists receivedTagLists = await _loadingDialogManager.performLoadingTask(
         context,
         _apiManager.getStunTags(),
@@ -153,6 +208,10 @@ class _PendingTagStunState extends State<PendingTagStunWidget> {
 
   void _onRefresh() {
     // monitor network fetch
-    _getPendingTags();
+    _getSubmittedTags();
+  }
+
+  int _getPointTotal (List<Tag> tags) {
+    return tags.fold(0, (sum, tag) => sum + tag.points);
   }
 }
